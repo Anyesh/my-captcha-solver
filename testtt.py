@@ -59,16 +59,13 @@ for contour in contours:
         # This contour is too wide to be a single letter!
         # Split it in half into two letter regions!
         half_width = int(w / 2)
-        letter_image_regions.append((x, y, half_width, h))
-        letter_image_regions.append((x + half_width, y, half_width, h))
+        letter_image_regions.extend(
+            ((x, y, half_width, h), (x + half_width, y, half_width, h))
+        )
+
     else:
         # This is a normal letter by itself
         letter_image_regions.append((x, y, w, h))
-
-# If we found more or less than 4 letters in the captcha, our letter extraction
-# didn't work correcly. Skip the image instead of saving bad training data!
-if len(letter_image_regions) != 4:
-    pass
 
 # Sort the detected letter images based on the x coordinate to make sure
 # we are processing them from left-to-right so we match the right image
@@ -107,7 +104,7 @@ for letter_bounding_box in letter_image_regions:
 
 # Print the captcha's text
 captcha_text = "".join(predictions)
-print("CAPTCHA text is: {}".format(captcha_text))
+print(f"CAPTCHA text is: {captcha_text}")
 
 # Show the annotated image
 cv2.imshow("Output", output)
